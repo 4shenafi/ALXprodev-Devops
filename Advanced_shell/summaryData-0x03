@@ -23,13 +23,16 @@ for file in "$DATA_DIR"/*.json; do
   name=$(jq -r '.name' "$file")
   height=$(jq -r '.height' "$file")
   weight=$(jq -r '.weight' "$file")
+
+  # Capitalize the first letter of the name
+  name_capitalized=$(echo "$name" | sed 's/./\U&/')
   
   # Convert height from decimetres to meters and weight from hectograms to kilograms
   height_m=$(echo "$height / 10" | bc -l)
   weight_kg=$(echo "$weight / 10" | bc -l)
   
   # Append the data to the CSV file
-  echo "$name,$height_m,$weight_kg" >> "$CSV_FILE"
+  echo "$name_capitalized,$height_m,$weight_kg" >> "$CSV_FILE"
 done
 
 echo "CSV Report generated at: $CSV_FILE"
