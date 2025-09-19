@@ -30,10 +30,19 @@ fetch_pokemon_data() {
   fi
 }
 
+# Trap to clean up background jobs on exit
+# This ensures that if the script is interrupted (e.g., with Ctrl+C),
+# any running background processes started by this script will be killed.
+trap 'kill $(jobs -p) 2>/dev/null' EXIT
+
 # Loop through the Pokémon list and start a background process for each
 for pokemon in "${POKEMON_LIST[@]}"; do
   fetch_pokemon_data "$pokemon" &
 done
+
+# Display the background jobs that have been started
+echo "Running jobs:"
+jobs
 
 # Wait for all background processes to complete
 wait
