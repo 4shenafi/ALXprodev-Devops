@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# This script extracts data from data.json and formats it.
+
+# Check if data.json exists
+if [ ! -f "data.json" ]; then
+  echo "Error: data.json not found. Please run the apiAutomation-0x00 script first." >&2
+  exit 1
+fi
+
+# Extract data using jq
+name=$(jq -r '.name' data.json)
+height=$(jq -r '.height' data.json)
+weight=$(jq -r '.weight' data.json)
+type=$(jq -r '.types[0].type.name' data.json)
+
+# Capitalize the first letter of the name and type
+name_capitalized=$(echo "$name" | sed 's/./\U&/')
+type_capitalized=$(echo "$type" | sed 's/./\U&/')
+
+# Format the output using awk
+echo "$name_capitalized is of type $type_capitalized, weighs ${weight}kg, and is ${height}m tall." | awk '{
+    # Convert height from decimetres to meters
+    $11 = $11 / 10;
+    # Convert weight from hectograms to kilograms
+    $7 = $7 / 10;
+    # Print the formatted string
+    printf "%s is of type %s, weighs %.1fkg, and is %.1fm tall.\\n", $1, $5, $7, $11
+}'
