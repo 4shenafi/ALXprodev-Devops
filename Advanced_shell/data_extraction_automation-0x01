@@ -18,12 +18,9 @@ type=$(jq -r '.types[0].type.name' data.json)
 name_capitalized=$(echo "$name" | sed 's/./\U&/')
 type_capitalized=$(echo "$type" | sed 's/./\U&/')
 
-# Format the output using awk
-echo "$name_capitalized is of type $type_capitalized, weighs ${weight}kg, and is ${height}m tall." | awk '{
-    # Convert height from decimetres to meters
-    $11 = $11 / 10;
-    # Convert weight from hectograms to kilograms
-    $7 = $7 / 10;
-    # Print the formatted string
-    printf "%s is of type %s, weighs %.1fkg, and is %.1fm tall.\\n", $1, $5, $7, $11
-}'
+# Convert height from decimetres to meters and weight from hectograms to kilograms
+formatted_height=$(echo "scale=1; $height / 10" | bc)
+formatted_weight=$(echo "scale=1; $weight / 10" | bc)
+
+# Format the output string
+echo "$name_capitalized is of type $type_capitalized, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
